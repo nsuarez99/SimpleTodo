@@ -13,15 +13,20 @@ import java.util.List;
 //Responsible for displaying data from the model into a row in the recycler view
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
+    public interface OnClickListener{
+        void onItemClicked(int position);
+    }
     public interface OnLongClickLister{
         void onItemLongClicked(int position);
     }
     List<String> items;
     OnLongClickLister longClickLister;
+    OnClickListener clickListener;
 
-    public ItemsAdapter(List<String> items, OnLongClickLister longClickLister) {
+    public ItemsAdapter(List<String> items, OnLongClickLister longClickLister, OnClickListener clickListener) {
         this.items = items;
         this.longClickLister = longClickLister;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -47,8 +52,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     public int getItemCount() {
         return items.size();
     }
-    //Container to provide easy access to views that represent each row of the list
 
+    //Container to provide easy access to views that represent each row of the list
     class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvItem;
@@ -61,10 +66,16 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         //update view inside of the view holder with data
         public void bind(String item) {
             tvItem.setText(item);
+            tvItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.onItemClicked(getAdapterPosition());
+                }
+            });
             tvItem.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    //rnotify the listener which position was long pressed
+                    //notify the listener which position was long pressed
                     longClickLister.onItemLongClicked(getAdapterPosition());
                     return true;
                 }
